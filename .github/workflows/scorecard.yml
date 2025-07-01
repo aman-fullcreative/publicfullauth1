@@ -1,8 +1,8 @@
 name: SecurityPipeline
 
 on:
-  # push:
-  #   branches: ['**']
+  push:
+    branches: ['**']
   pull_request:
     branches: ['**']
   workflow_dispatch:
@@ -44,4 +44,4 @@ jobs:
               --no-git \
               --verbose \
               --exit-code 1 || true
-              
+
