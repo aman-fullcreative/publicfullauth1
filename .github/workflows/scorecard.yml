@@ -2,9 +2,9 @@ name: Secret Scan
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 jobs:
   secret-scan:
@@ -35,6 +35,17 @@ jobs:
         run: |
           echo "Running TruffleHog..."
           trufflehog filesystem . --include-detectors=all --no-verification --json > output/json/trufflehog_report.json
+
+      - name: Combine and extract to CSV
+        run: |
+          chmod +x ./extract_secrets_to_csv2.py
+          python3 extract_secrets_to_csv2.py output/json/trufflehog_report.json output/json/semgrep_report.json output/csv/secrets_combined_report.csv
+
+      - name: Show extracted secrets in GitHub Actions logs
+        run: |
+          echo "================== Extracted Secrets (CSV Preview) =================="
+          cat output/csv/secrets_combined_report.csv || echo "No secrets found"
+          echo "===================================================================="
 
       - name: Upload CSV report(s)
         uses: actions/upload-artifact@v4
